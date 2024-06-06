@@ -1,9 +1,3 @@
---[[
-SCRIPT BY:
-  Discord: @WLncstr
-  Roblox: @TheSingularFungi
-]]
-
 local rch = require(game:GetService("ServerScriptService").RaycastHitbox) -- this gets the raycast module im using
 local tween = game:GetService("TweenService") -- you know what this does
 local damagemodule = require(game.ReplicatedStorage.DamageMod) -- this gets my damage module
@@ -174,7 +168,6 @@ function WeaponServer(plr,count,damage,blade,delaytime,Type)
 	end
 
 	local function EndHitBox()
-		hitConnection:Disconnect() -- I cant stand not disconnecting things 
 		hitbox:HitStop()
 	end
 
@@ -221,6 +214,8 @@ function Block(plr,t,block)
 			load:Stop()
 			char.Block.Value = false
 		end
+		
+		disconnectUnblockFunctions()
 	end
 	--
 	
