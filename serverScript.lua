@@ -1,6 +1,7 @@
 local rch = require(game:GetService("ServerScriptService").RaycastHitbox) -- this gets the raycast module im using
 local tween = game:GetService("TweenService") -- you know what this does
 local damagemodule = require(game.ReplicatedStorage.DamageMod) -- this gets my damage module
+local ServerFunctions = require(game:GetService("ServerScriptService").ServerFunctions)
 
 local swingEvent = game.ReplicatedStorage.Events.Swing -- gets event
 local unblockEvent = game.ReplicatedStorage.Events.Unblock -- unblock event
@@ -57,7 +58,7 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 		while effect do
 			effect.CFrame = effect.CFrame * CFrame.Angles(0,math.rad(direction * 5.75),0) -- the direction defined previously will determien the orientation. Direction is defined as +/- 1 according to which animation is being played.
 			effect.Position = torso.Position + Vector3.new(0,Y,0) + torso.CFrame.LookVector*-.5
-			_G.WaitTik()
+			ServerFunctions.WaitTik()
 		end
 	end
 
@@ -107,9 +108,9 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 		effect.CFrame = CFrame.new(effect.CFrame.Position,-1 * (torso.CFrame.LookVector * 500)) * angles
 		effect.Parent = workspace
 
-		_G.Spawn(EffectCFrameWhileLoop)
-		_G.Spawn(EmitParticles,effect)
-		_G.Spawn(PlaySounds)
+		ServerFunctions.Spawn(EffectCFrameWhileLoop)
+		ServerFunctions.Spawn(EmitParticles,effect)
+		ServerFunctions.Spawn(PlaySounds)
 
 		FuncEffectAngles()
 		AnimateEffect()
@@ -119,7 +120,7 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 	end
 
 
-	_G.Spawn(Execute)
+	ServerFunctions.Spawn(Execute)
 
 end
 
@@ -157,9 +158,9 @@ function WeaponServer(plr,count,damage,blade,delaytime,Type)
 	
 	local function OnHit(hit,human)
 		if (count == 5) then
-			_G.Knockback(human,plr.Character.Torso,{1,30}) -- the final hit (5'th swing) applies knockback
+			ServerFunctions.Knockback(human,plr.Character.Torso,{1,30}) -- the final hit (5'th swing) applies knockback
 		end
-		_G.Spawn(damagemodule.Damage,damage,human,"Blade",true,plr.Character.Torso,false)
+		ServerFunctions.Spawn(damagemodule.Damage,damage,human,"Blade",true,plr.Character.Torso,false)
 	end
 	
 	local function StartHitBox()
