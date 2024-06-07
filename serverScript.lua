@@ -1,3 +1,11 @@
+--[[
+SCRIPT BY:
+	Discord: @WLncstr
+	ROBLOX: TheSingularFungi
+
+	Line-Count without Comments or Spaces: 201 (This repository also contains the script with no empty lines or comment lines)
+]]
+
 local rch = require(game:GetService("ServerScriptService").RaycastHitbox) -- this gets the raycast module im using
 local repStr = game:GetService("ReplicatedStorage")
 local tween = game:GetService("TweenService") -- you know what this does
