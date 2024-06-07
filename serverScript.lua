@@ -4,6 +4,7 @@ SCRIPT BY:
 	ROBLOX: TheSingularFungi
 
 	Line-Count without Comments or Spaces: EXACTLY 200 somehow (This repository also contains the script with no empty lines or comment lines)
+	This same script was denied previously for not having enough lines, however, I asked if I could add a new function and re-apply, and I got permission.
 ]]
 
 local rch = require(game:GetService("ServerScriptService").RaycastHitbox) -- this gets the raycast module im using
