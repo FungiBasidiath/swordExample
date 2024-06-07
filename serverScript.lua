@@ -1,14 +1,64 @@
 local rch = require(game:GetService("ServerScriptService").RaycastHitbox) -- this gets the raycast module im using
+local repStr = game:GetService("ReplicatedStorage")
 local tween = game:GetService("TweenService") -- you know what this does
 local damagemodule = require(game.ReplicatedStorage.DamageMod) -- this gets my damage module
-local ServerFunctions = require(game:GetService("ServerScriptService").ServerFunctions)
 
 local swingEvent = game.ReplicatedStorage.Events.Swing -- gets event
 local unblockEvent = game.ReplicatedStorage.Events.Unblock -- unblock event
 local blockEvent = game.ReplicatedStorage.Events.BlockEv -- block event
 
 
+function fSpawn(func, ...)
+	local thread = coroutine.create(func)
+	coroutine.resume(thread, ...)
+	return thread
+end
 
+function Knockback(hum,AttackCFrame,intensity)
+	--LOCAL VARIABLES
+	local bodyPos = hum.Parent.HumanoidRootPart:FindFirstChildOfClass("BodyPosition")
+	local vectorInstance = repStr.Weapons:FindFirstChild("VectorForce")
+	local torso 
+	local attFrame
+	local cframe
+	local direction
+	local vf
+	local att
+	
+	--LOCAL FUNCTIONS
+	local function DestroyVf()
+		if (vf ~= nil) then
+			vf:Destroy()
+		end
+	end
+	
+	local function PlatformStand()
+		hum.PlatformStand = true
+	end
+	
+	local function SetVector(attachment)
+		vf.Parent = torso
+		vf.Attachment0 = attachment
+		vf.Force = (direction + Vector3.new(0,.2,0)) * 200
+	end
+
+	if (not bodyPos) then -- will not run with a body pos already there	
+		
+		PlatformStand() -- causes the character to not stand so that they can get knocked back
+		
+		torso = hum.Parent.HumanoidRootPart
+		attFrame = CFrame.new(AttackCFrame.Position,hum.Parent.PrimaryPart.CFrame.Position) -- where the attack is coming from so the knockback can be applied accordingly
+		cframe = CFrame.new(attFrame.Position + Vector3.new(0,intensity[1],0)) + attFrame.LookVector * intensity[2] -- this will use the intensity to create the knockback in te direction that the attack is facing
+		direction = cframe.Position - torso.Position
+		
+		vf = vectorInstance:Clone()
+		att = Instance.new("Attachment",torso)
+		
+		SetVector(att)
+		delay(0.2,DestroyVf)
+
+	end
+end
 
 -- the swing function cframe/angles stuff is basically creating a "swing" effect that follows the sword and is lined up with the animations
 local function Swing(plr,Type,count) -- type is the type of swing, count is which animation is playing
@@ -42,7 +92,7 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 		effect.Fire:Play()
 	end
 
-	local function DestroyEffect()
+	local function DestroyEffect(inst)
 		effect:Destroy()
 	end
 
@@ -58,7 +108,7 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 		while effect do
 			effect.CFrame = effect.CFrame * CFrame.Angles(0,math.rad(direction * 5.75),0) -- the direction defined previously will determien the orientation. Direction is defined as +/- 1 according to which animation is being played.
 			effect.Position = torso.Position + Vector3.new(0,Y,0) + torso.CFrame.LookVector*-.5
-			ServerFunctions.WaitTik()
+			_G.WaitTik()
 		end
 	end
 
@@ -108,9 +158,9 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 		effect.CFrame = CFrame.new(effect.CFrame.Position,-1 * (torso.CFrame.LookVector * 500)) * angles
 		effect.Parent = workspace
 
-		ServerFunctions.Spawn(EffectCFrameWhileLoop)
-		ServerFunctions.Spawn(EmitParticles,effect)
-		ServerFunctions.Spawn(PlaySounds)
+		fSpawn(EffectCFrameWhileLoop)
+		fSpawn(EmitParticles,effect)
+		fSpawn(PlaySounds)
 
 		FuncEffectAngles()
 		AnimateEffect()
@@ -120,7 +170,7 @@ local function Swing(plr,Type,count) -- type is the type of swing, count is whic
 	end
 
 
-	ServerFunctions.Spawn(Execute)
+	fSpawn(Execute)
 
 end
 
@@ -158,9 +208,9 @@ function WeaponServer(plr,count,damage,blade,delaytime,Type)
 	
 	local function OnHit(hit,human)
 		if (count == 5) then
-			ServerFunctions.Knockback(human,plr.Character.Torso,{1,30}) -- the final hit (5'th swing) applies knockback
+			Knockback(human,plr.Character.Torso,{1,30}) -- the final hit (5'th swing) applies knockback
 		end
-		ServerFunctions.Spawn(damagemodule.Damage,damage,human,"Blade",true,plr.Character.Torso,false)
+		fSpawn(damagemodule.Damage,damage,human,"Blade",true,plr.Character.Torso,false)
 	end
 	
 	local function StartHitBox()
